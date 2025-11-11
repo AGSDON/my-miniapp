@@ -1,0 +1,12 @@
+{
+  "miniapp": {
+    "name": "My Mini App (Demo)",
+    "description": "A simple demo mini app (static HTML)",
+    "icon": "https://YOUR_DOMAIN/icon-192.png",
+    "start_url": "https://YOUR_DOMAIN/",
+    "scopes": ["context"]
+  },
+  "accountAssociation": {
+    "jfs": "<PASTE_YOUR_SIGNED_JFS_HERE>"
+  }
+}

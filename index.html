@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>My Farcaster Mini App (Demo)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Optional: embed meta for rich cards -->
+  <meta name="fc:miniapp" content="true" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 24px; max-width: 720px; margin: auto;}
+    header {display:flex; gap:12px; align-items:center}
+    img.logo {width:48px;height:48px;border-radius:8px}
+    button {padding:10px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="https://via.placeholder.com/64" alt="icon"/>
+    <h1>My Mini App (Demo)</h1>
+  </header>
+
+  <p id="status">Checking environment...</p>
+
+  <div id="user" style="display:none">
+    <h3>User info (if opened inside Farcaster)</h3>
+    <div id="ctx"></div>
+  </div>
+
+  <p>
+    <button id="openlink">Open example link via SDK</button>
+  </p>
+
+  <script>
+    // If @farcaster/miniapp-sdk is available in the client, some Farcaster clients inject it.
+    // We'll try to call it gracefully.
+    async function safeInit() {
+      const status = document.getElementById('status');
+      try {
+        // window.farcasterMiniAppSdk or global 'sdk' may be injected by clients
+        const sdk = window.sdk || window.farcasterMiniAppSdk || (window.__FARCASTER_SDK && window.__FARCASTER_SDK.sdk);
+        if (!sdk || typeof sdk.isInMiniApp !== 'function') {
+          status.textContent = 'Not opened inside a Farcaster Mini App (or SDK not injected).';
+          return;
+        }
+
+        const isMini = await sdk.isInMiniApp();
+        status.textContent = 'isInMiniApp: ' + isMini;
+
+        if (isMini) {
+          const ctx = await sdk.context();
+          document.getElementById('user').style.display = 'block';
+          document.getElementById('ctx').textContent = JSON.stringify(ctx, null, 2);
+        }
+      } catch (e) {
+        console.error(e);
+        status.textContent = 'Error while accessing Mini App SDK: ' + e.message;
+      }
+    }
+
+    document.getElementById('openlink').addEventListener('click', async () => {
+      try {
+        const sdk = window.sdk || window.farcasterMiniAppSdk;
+        if (sdk && sdk.openUrl) {
+          await sdk.openUrl('https://example.com');
+        } else {
+          window.open('https://example.com', '_blank');
+        }
+      } catch (e) { console.error(e); alert('Failed to open via SDK'); }
+    });
+
+    safeInit();
+  </script>
+</body>
+</html>
